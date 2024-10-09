@@ -8,7 +8,8 @@ import productRouter from './routes/productRoute.js';
 import cartRouter from './routes/cartRoute.js';
 import orderRouter from './routes/orderRoute.js';
 import sellerRoutes from './routes/sellerRoutes.js'; 
-
+import sellItemRoutes from './routes/sellItemRoutes.js';
+import displayProductRouter from './routes/displayProduct.js'; 
 // App Config
 
 const app=express()
@@ -27,6 +28,8 @@ app.use('/api/product',productRouter)
 app.use('/api/cart',cartRouter)
 app.use('/api/order',orderRouter);
 app.use('/api',sellerRoutes);
+app.use('/api',sellItemRoutes);
+app.use('/api/displayproduct', displayProductRouter);
 
 app.get('/',(req,res)=>{
  res.send("API working")

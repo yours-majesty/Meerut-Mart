@@ -2,34 +2,59 @@ import userModel from "../models/userModel.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import Admin from '../models/adminModel.js';
-
+import Seller from '../models/sellerModel.js';
 import validator from "validator"; 
+import User from '../models/userModel.js'; 
 
-const createToken = (id) => {
-    return jwt.sign({ id }, process.env.JWT_SECRET);
+
+const createToken = (id, role) => {
+    return jwt.sign({ id, role }, process.env.JWT_SECRET, {
+        expiresIn: '1d' 
+    });
 };
 
 // Route for user login
 const loginUser = async (req, res) => {
+    const { email } = req.body;
+
     try {
-        const { email, password } = req.body;
-        const user = await userModel.findOne({ email });
-        if (!user) {
-            return res.json({ success: false, message: "User doesn't exist" });
+       
+        let user = await User.findOne({ email });
+
+        if (user) {
+        
+            const token = createToken(user._id, 'user'); 
+
+            return res.status(200).json({
+                success: true,
+                token,
+                role: 'user' 
+            });
+        } else {
+            // If user is not found in User collection, check Seller collection
+            let seller = await Seller.findOne({ email });
+
+            if (seller) {
+               
+                const token = createToken(seller._id, 'seller');  
+
+                return res.status(200).json({
+                    success: true,
+                    token, 
+                    role: 'seller' 
+                });
+            }
         }
 
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (isMatch) {
-            const token = createToken(user._id);
-            res.json({ success: true, token });
-        } else {
-            res.json({ success: false, message: "Invalid Credentials" });
-        }
+        // If neither user nor seller is found
+        res.status(401).json({ success: false, message: 'Invalid credentials' });
+
     } catch (error) {
-        console.log(error);
-        res.json({ success: false, message: error.message });
+        console.error('Error during login:', error);
+        res.status(500).json({ success: false, message: 'Server error' });
     }
 };
+
 
 // Route for user registration
 const registerUser = async (req, res) => {
@@ -40,7 +65,7 @@ const registerUser = async (req, res) => {
             return res.json({ success: false, message: "User Already Exists with the same email." });
         }
 
-        // Validate email and password
+        
         if (!validator.isEmail(email)) {
             return res.json({ success: false, message: "Please enter a valid email" });
         }

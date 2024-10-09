@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from 'react';
 import { ShopContext } from '../context/ShopContext';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { jwtDecode } from 'jwt-decode'
+import {jwtDecode}  from 'jwt-decode';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -12,37 +12,39 @@ const Login = () => {
   const onSubmitHandler = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(`${backendUrl}/api/user/login`, { email, password },{
-        headers: {
-          Authorization: `Bearer ${token}` // Ensure you have a valid token if needed
-        }
-      });
-      
+      const response = await axios.post(`${backendUrl}/api/user/login`, { email, password });
+
       if (response.data.success) {
         const userToken = response.data.token;
         setToken(userToken); // Set the token in the context
-        localStorage.setItem('token', userToken); // Save token in localStorage
-        toast.success('Login successful'); // Display success 
+        localStorage.setItem('token', userToken); // Store token in localStorage
+        toast.success('Login successful'); // Display success message
+
+        // Decode the token to get user details
         const decoded = jwtDecode(userToken);
-        const userRole = decoded.role;
-        if(userRole==='user'){
-          navigate('/');
+        console.log(decoded);
+        const userRole = decoded.role; // Get user role from the token
+console.log(userRole);
+        // Redirect based on the user's role
+        if (userRole === 'user') {
+          navigate('/'); // Redirect to home for users
+        } else if (userRole === 'seller') {
+          navigate('/sell-item'); // Redirect to the seller page
+        } else {
+          toast.error('Role not recognized.'); // Handle unexpected role
         }
-       else if(userRole==='seller'){
-        navigate('/sell-item')
-       }
       } else {
         toast.error(response.data.message); // Display error message from the server
       }
     } catch (error) {
-      console.error(error); // Log for debugging
+      console.error(error); // Log error for debugging
       toast.error('An error occurred. Please try again.'); // User-friendly error message
     }
   };
 
   useEffect(() => {
     if (token) {
-      navigate('/'); // Navigate if token is present
+      navigate('/'); // Navigate if token is already present
     }
   }, [token, navigate]);
 

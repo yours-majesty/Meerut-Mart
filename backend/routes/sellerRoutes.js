@@ -1,9 +1,11 @@
 import express from 'express';
-import sellerController from '../controllers/sellerController';
+import sellerController from '../controllers/sellerController.js';
 import authUser from '../middleware/auth.js';
+import { loginUser } from '../controllers/userController.js';
+
 const router = express.Router();
 
-// Define the route for creating a seller
+
 
 router.post('/become-seller',authUser,sellerController);
 

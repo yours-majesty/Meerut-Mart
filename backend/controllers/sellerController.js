@@ -1,13 +1,14 @@
-import User from '../models/userModel.js'; // Adjust the path as necessary
-import Seller from '../models/sellerModel.js'; // Adjust the path as necessary
+import User from '../models/userModel.js'; 
+import Seller from '../models/sellerModel.js'; 
 
-const becomeSeller = async (req, res) => {
-    const { contactNumber, shopLocation } = req.body;
-    const userId = req.body.userId; // Ensure this comes from the token
+const sellerController = async (req, res) => {
+    const { contactNumber, shopLocation, email } = req.body; 
+    const userId = req.body.userId; 
 
     try {
         // Find the user by ID
         const user = await User.findById(userId);
+        console.log("Searching for user with ID:", userId);
 
         if (!user) {
             return res.status(404).json({ success: false, message: 'User not found' });
@@ -15,9 +16,12 @@ const becomeSeller = async (req, res) => {
 
         // Create a seller instance
         const seller = await Seller.create({
-            userId, // Use the found user's ID
+            userId, 
             contactNumber,
             shopLocation,
+            email, 
+            password: user.password, 
+            role: 'seller' 
         });
 
         res.status(201).json({ success: true, seller });
@@ -27,3 +31,4 @@ const becomeSeller = async (req, res) => {
     }
 };
 
+export default sellerController;
