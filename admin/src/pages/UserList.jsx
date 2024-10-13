@@ -67,7 +67,7 @@ const UserList = ({ token }) => {
 
     return (
         <div className="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg">
-            <h1 className="text-2xl font-bold text-center mb-4">User List</h1>
+            <h1 className="text-2xl font-bold text-center mb-4">All Sellers List</h1>
             <table className="min-w-full bg-gray-100 border border-gray-300 rounded-lg">
                 <thead>
                     <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import  { useState } from 'react'
 import { assets } from '../admin_assets/assets'
 import axios from 'axios';
 import { backendUrl } from '../App';

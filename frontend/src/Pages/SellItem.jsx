@@ -113,6 +113,51 @@ const SellItem = () => {
             />
             <p className="text-xs text-gray-500 mt-2">You can upload up to 4 photos.</p>
           </div>
+           {/* Product Photos */}
+          <div className="mb-4">
+            <label htmlFor="productPhotos" className="block text-sm font-medium text-gray-700">Product Photos</label>
+            <input
+              type="file"
+              id="productPhotos"
+              name="productPhotos"
+              accept="image/*"
+              multiple
+              required
+              className="mt-1 block w-full text-sm text-gray-700 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+              onChange={handleFileChange}
+            />
+            <p className="text-xs text-gray-500 mt-2">You can upload up to 4 photos.</p>
+          </div>
+           {/* Product Photos */}
+          <div className="mb-4">
+            <label htmlFor="productPhotos" className="block text-sm font-medium text-gray-700">Product Photos</label>
+            <input
+              type="file"
+              id="productPhotos"
+              name="productPhotos"
+              accept="image/*"
+              multiple
+              required
+              className="mt-1 block w-full text-sm text-gray-700 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+              onChange={handleFileChange}
+            />
+            <p className="text-xs text-gray-500 mt-2">You can upload up to 4 photos.</p>
+          </div>
+           {/* Product Photos */}
+          <div className="mb-4">
+            <label htmlFor="productPhotos" className="block text-sm font-medium text-gray-700">Product Photos</label>
+            <input
+              type="file"
+              id="productPhotos"
+              name="productPhotos"
+              accept="image/*"
+              multiple
+              required
+              className="mt-1 block w-full text-sm text-gray-700 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+              onChange={handleFileChange}
+            />
+            <p className="text-xs text-gray-500 mt-2">You can upload up to 4 photos.</p>
+          </div>
 
           {/* Product Quantity */}
           <div className="mb-4">

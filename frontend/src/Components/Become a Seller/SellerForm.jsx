@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 
 const SellerForm = () => {
     const backendURL = import.meta.env.VITE_BACKEND_URL;
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
         contactNumber: '', 
         shopLocation: '',
@@ -42,6 +44,7 @@ const SellerForm = () => {
             );
             console.log('Seller created:', response.data);
             toast.success("Seller has been created");
+            navigate('/sell-item');
         } catch (error) {
             console.error('Error creating seller:', error.response ? error.response.data : error.message);
             toast.error("Failed to create seller. Please try again.");
