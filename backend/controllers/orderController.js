@@ -53,8 +53,8 @@ const allOrders= async(req,res)=>{
 // user order data for Frontend
 const userOrders = async (req, res) => {
     try {
-        const { email } = req.body; // Extract email from the request body
-        const orders = await orderModel.find({ email }); // Find orders by email
+        const userId = req.user.id;
+        const orders = await orderModel.find({userId:userId}); // Find orders by email
         res.json({ success: true, orders });
     } catch (error) {
         console.log(error);

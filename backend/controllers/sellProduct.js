@@ -1,5 +1,5 @@
 import {v2 as cloudinary} from 'cloudinary'
-import sellerProductModel from '../models/sellerProductModel.js';
+import sellProductModel from '../models/sellerProductModel.js';
 
 // Function for add product
 const sellProduct= async (req,res)=>{
@@ -20,7 +20,7 @@ const sellProduct= async (req,res)=>{
     )
 
 
-    const sellData={
+    const productData={
         name,
         description,
         category,
@@ -32,7 +32,7 @@ const sellProduct= async (req,res)=>{
         date: Date.now()
     }
 
-    const product= new sellerProductModel(sellData);
+    const product= new sellProductModel(productData);
     await product.save();
 
 

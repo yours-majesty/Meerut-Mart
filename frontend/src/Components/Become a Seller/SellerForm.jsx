@@ -9,6 +9,8 @@ const SellerForm = () => {
     const [formData, setFormData] = useState({
         contactNumber: '', 
         shopLocation: '',
+        addharCard:'',
+        panCard:'',
         email: '', 
         password: '', 
     });
@@ -62,6 +64,31 @@ const SellerForm = () => {
                         id="shopLocation"
                         name="shopLocation"
                         value={formData.shopLocation}
+                        onChange={handleChange}
+                        required
+                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-500 focus:outline-none p-2"
+                    />
+                </div>
+                <div>
+                    <label htmlFor="addharCard" className="block text-sm font-medium text-gray-700">Addhar Card:</label>
+                    <input
+                        type="number"
+                        id="addharCard"
+                        name="addharCard"
+                        value={formData.addharCard}
+                        onChange={handleChange}
+                        required
+                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-500 focus:outline-none p-2"
+                    />
+                </div>
+
+                <div>
+                    <label htmlFor="panCard" className="block text-sm font-medium text-gray-700">Pan Card:</label>
+                    <input
+                        type="text"
+                        id="panCard"
+                        name="panCard"
+                        value={formData.panCard}
                         onChange={handleChange}
                         required
                         className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-500 focus:outline-none p-2"

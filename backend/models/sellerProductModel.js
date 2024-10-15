@@ -1,17 +1,17 @@
-import mongoose from 'mongoose';
-import validator from 'validator';
+import mongoose from "mongoose";
 
-const sellerProductSchema = new mongoose.Schema({
-  shopName: { type: String, required: true },
-  productName: { type: String, required: true },
-  productQuantity: { type: Number, required: true },
-  productPrice: { type: Number, required: true },
-  productCategory: { type: String, required: true },
-  productSubCategory: { type: String },
-  vendorNumber: { type: String, required: true },
-  productPhotos: { type: [String], required: true } 
-}, { timestamps: true });
+const sellProductSchema=new mongoose.Schema({
+    name:{type:String, required:true},
+    description:{type:String, required:true},
+    price:{type:Number, required:true},
+    image:{type:Array, required:true},
+    category:{type:String, required:true},
+    subCategory:{type:String, required:true},
+    sizes:{type:Array, required:true},
+    bestseller:{type:Boolean},
+    date:{type:Number, required:true}
+})
 
-const sellerProductModel = mongoose.model("sellProduct",sellerProductSchema);
+const sellProductModel= mongoose.models.sellProducts ||  mongoose.model("sellProduct",sellProductSchema);
 
-export default sellerProductModel;
+export default sellProductModel;

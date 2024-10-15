@@ -2,7 +2,7 @@ import User from '../models/userModel.js';
 import Seller from '../models/sellerModel.js'; 
 
 const sellerController = async (req, res) => {
-    const { contactNumber, shopLocation, email } = req.body; 
+    const { contactNumber, shopLocation,addharCard,panCard, email } = req.body; 
     const userId = req.body.userId; 
 
     try {
@@ -18,6 +18,8 @@ const sellerController = async (req, res) => {
         const seller = await Seller.create({
             userId, 
             contactNumber,
+            addharCard,
+            panCard,
             shopLocation,
             email, 
             password: user.password, 

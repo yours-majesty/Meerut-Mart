@@ -15,7 +15,8 @@ const Orders = () => {
       
       const response = await axios.post(
         backendUrl + '/api/order/userorders',
-        {}, // Empty body
+        {},
+        // Empty body
         {
           headers: {
             authorization: `Bearer ${token}` // Pass the token correctly

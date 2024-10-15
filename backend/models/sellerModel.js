@@ -8,6 +8,14 @@ const sellerSchema = new mongoose.Schema({
         required: true, 
         match: /^[0-9]{10}$/ 
     },
+    addharCard:{
+        type:Number,
+        required:true
+    },
+    panCard:{
+        type:String,
+        required:true
+    },
     email: { 
         type: String, 
         required: true, 

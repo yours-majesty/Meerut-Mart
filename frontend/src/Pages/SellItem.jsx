@@ -1,230 +1,139 @@
 import { useState } from 'react';
+import { assets } from './admin_assets/assets';
 import axios from 'axios';
-import { ToastContainer, toast } from 'react-toastify'; // Import Toastify
-import 'react-toastify/dist/ReactToastify.css'; // Import Toastify CSS
+import { toast } from 'react-toastify';
 
-const SellItem = () => {
-  const backendURL=import.meta.env.VITE_BACKEND_URL;
-  const [formData, setFormData] = useState({
-    shopName: '',
-    productName: '',
-    productPhotos: [],
-    productQuantity: 0,
-    productPrice: 0,
-    productCategory: '',
-    productSubCategory: '',
-    vendorNumber: ''
-  });
+const SellItem = ({ token }) => {
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+  const [image1, setImage1] = useState(false);
+  const [image2, setImage2] = useState(false);
+  const [image3, setImage3] = useState(false);
+  const [image4, setImage4] = useState(false);
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+  const [price, setPrice] = useState('');
+  const [category, setCategory] = useState('Men');
+  const [subCategory, setSubCategory] = useState('Topwear');
+  const [bestseller, setBestseller] = useState(false);
+  const [sizes, setSizes] = useState([]);
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
-
-  const handleFileChange = (e) => {
-    if (e.target.files.length > 4) {
-      alert('You can upload a maximum of 4 photos.');
-      e.target.value = ''; // Clear the input field
-    } else {
-      setFormData({
-        ...formData,
-        productPhotos: e.target.files
-      });
-    }
-  };
-
-  const handleSubmit = async (e) => {
+  const onSubmitHandler = async (e) => {
     e.preventDefault();
-
-    const data = new FormData();
-    data.append('shopName', formData.shopName);
-    data.append('productName', formData.productName);
-    data.append('productQuantity', formData.productQuantity);
-    data.append('productPrice', formData.productPrice);
-    data.append('productCategory', formData.productCategory);
-    data.append('productSubCategory', formData.productSubCategory);
-    data.append('vendorNumber', formData.vendorNumber);
-
-    // Add each photo to FormData
-    Array.from(formData.productPhotos).forEach(photo => {
-      data.append('productPhotos', photo);
-    });
-
     try {
-      const response = await axios.post(`${backendURL}/api/sell-item`, data, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
-      console.log('Item successfully submitted:', response.data);
-      toast.success('Item submitted successfully!'); // Show success toast
+      const formData = new FormData();
+      formData.append('name', name);
+      formData.append('description', description);
+      formData.append('price', price);
+      formData.append('category', category);
+      formData.append('subCategory', subCategory);
+      formData.append('bestseller', bestseller);
+      formData.append('sizes', JSON.stringify(sizes));
+      image1 && formData.append('image1', image1);
+      image2 && formData.append('image2', image2);
+      image3 && formData.append('image3', image3);
+      image4 && formData.append('image4', image4);
+
+      const response = await axios.post(`${backendUrl}/api/sell-item`, formData, { headers: { token } });
+      if (response.data.success) {
+        toast.success(response.data.message);
+        setName('');
+        setDescription('');
+        setImage1(false);
+        setImage2(false);
+        setImage3(false);
+        setImage4(false);
+        setPrice('');
+      } else {
+        toast.error(response.data.message);
+      }
     } catch (error) {
-      console.error('Error submitting item:', error);
-      toast.error('Error submitting item. Please try again.'); // Show error toast
+      toast.error(error.message);
     }
   };
 
   return (
-    <div className="bg-gray-100 p-10">
-      <ToastContainer /> {/* Include ToastContainer here */}
-      <div className="max-w-xl mx-auto bg-white p-8 rounded-lg shadow-md">
-        <h2 className="text-2xl font-bold mb-6 text-gray-800">Vendor Product Submission Form</h2>
-        <form onSubmit={handleSubmit} encType="multipart/form-data">
-          {/* Shop Name */}
-          <div className="mb-4">
-            <label htmlFor="shopName" className="block text-sm font-medium text-gray-700">Shop Name</label>
-            <input
-              type="text"
-              id="shopName"
-              name="shopName"
-              value={formData.shopName}
-              onChange={handleChange}
-              required
-              className="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
-            />
+    <div className="flex justify-center items-center min-h-screen">
+      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-xl">
+        <h2 className="text-center text-2xl font-bold mb-6">Vendor Sell Item Form</h2>
+        <form onSubmit={onSubmitHandler} className="flex flex-col gap-6">
+          <div>
+            <p className="mb-2">Upload Images</p>
+            <div className="flex gap-2">
+              <label htmlFor="image1">
+                <img className="w-20 cursor-pointer" src={!image1 ? assets.upload_area : URL.createObjectURL(image1)} alt="" />
+                <input onChange={(e) => setImage1(e.target.files[0])} type="file" id="image1" hidden />
+              </label>
+              <label htmlFor="image2">
+                <img className="w-20 cursor-pointer" src={!image2 ? assets.upload_area : URL.createObjectURL(image2)} alt="" />
+                <input onChange={(e) => setImage2(e.target.files[0])} type="file" id="image2" hidden />
+              </label>
+              <label htmlFor="image3">
+                <img className="w-20 cursor-pointer" src={!image3 ? assets.upload_area : URL.createObjectURL(image3)} alt="" />
+                <input onChange={(e) => setImage3(e.target.files[0])} type="file" id="image3" hidden />
+              </label>
+              <label htmlFor="image4">
+                <img className="w-20 cursor-pointer" src={!image4 ? assets.upload_area : URL.createObjectURL(image4)} alt="" />
+                <input onChange={(e) => setImage4(e.target.files[0])} type="file" id="image4" hidden />
+              </label>
+            </div>
           </div>
-
-          {/* Product Name */}
-          <div className="mb-4">
-            <label htmlFor="productName" className="block text-sm font-medium text-gray-700">Product Name</label>
-            <input
-              type="text"
-              id="productName"
-              name="productName"
-              value={formData.productName}
-              onChange={handleChange}
-              required
-              className="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
-            />
+          <div>
+            <p className="mb-2">Product Name</p>
+            <input onChange={(e) => setName(e.target.value)} value={name} className="w-full px-3 py-2 border rounded" type="text" placeholder="Type Here" required />
           </div>
-
-          {/* Product Photos */}
-          <div className="mb-4">
-            <label htmlFor="productPhotos" className="block text-sm font-medium text-gray-700">Product Photos</label>
-            <input
-              type="file"
-              id="productPhotos"
-              name="productPhotos"
-              accept="image/*"
-              multiple
-              required
-              className="mt-1 block w-full text-sm text-gray-700 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
-              onChange={handleFileChange}
-            />
-            <p className="text-xs text-gray-500 mt-2">You can upload up to 4 photos.</p>
+          <div>
+            <p className="mb-2">Product Description</p>
+            <textarea onChange={(e) => setDescription(e.target.value)} value={description} className="w-full px-3 py-2 border rounded" placeholder="Write Description here" required />
           </div>
-           {/* Product Photos */}
-          <div className="mb-4">
-            <label htmlFor="productPhotos" className="block text-sm font-medium text-gray-700">Product Photos</label>
-            <input
-              type="file"
-              id="productPhotos"
-              name="productPhotos"
-              accept="image/*"
-              multiple
-              required
-              className="mt-1 block w-full text-sm text-gray-700 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
-              onChange={handleFileChange}
-            />
-            <p className="text-xs text-gray-500 mt-2">You can upload up to 4 photos.</p>
+          <div className="flex flex-wrap gap-6">
+            <div>
+              <p className="mb-2">Product Category</p>
+              <select onChange={(e) => setCategory(e.target.value)} className="w-full px-3 py-2 border rounded">
+                <option value="Men">Men</option>
+                <option value="Women">Women</option>
+                <option value="Kids">Kids</option>
+                <option value="Mitti ke Diye">Mitti ke Diye</option>
+                <option value="Mitti ke Bartan">Mitti ke Bartan</option>
+                <option value="Muda Chair">Muda Chair</option>
+                <option value="Genda Phool">Genda Phool</option>
+              </select>
+            </div>
+            <div>
+              <p className="mb-2">Product Sub-Category</p>
+              <select onChange={(e) => setSubCategory(e.target.value)} className="w-full px-3 py-2 border rounded">
+                <option value="Bottomwear">Bottomwear</option>
+                <option value="Topwear">Topwear</option>
+                <option value="Winterwear">Winterwear</option>
+                <option value="Earthen">Earthen</option>
+                <option value="Silver">Silver</option>
+                <option value="Non-Sticky">Non-Sticky</option>
+                <option value="Metal">Metal</option>
+                <option value="Engineered Wood">Engineered Wood</option>
+                <option value="Bamboo">Bamboo</option>
+                <option value="Non-Coated">Non-Coated</option>
+                <option value="Genda Phool">Genda Phool</option>
+              </select>
+            </div>
+            <div>
+              <p className="mb-2">Product Price</p>
+              <input onChange={(e) => setPrice(e.target.value)} value={price} className="w-full px-3 py-2 border rounded" type="number" placeholder="Price here" required />
+            </div>
           </div>
-           {/* Product Photos */}
-          <div className="mb-4">
-            <label htmlFor="productPhotos" className="block text-sm font-medium text-gray-700">Product Photos</label>
-            <input
-              type="file"
-              id="productPhotos"
-              name="productPhotos"
-              accept="image/*"
-              multiple
-              required
-              className="mt-1 block w-full text-sm text-gray-700 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
-              onChange={handleFileChange}
-            />
-            <p className="text-xs text-gray-500 mt-2">You can upload up to 4 photos.</p>
+          <div>
+            <p className="mb-2">Product Sizes (can be 1 or more)</p>
+            <div className="flex gap-2">
+              {['S', 'M', 'L', 'XL', 'XXL'].map(size => (
+                <div key={size} onClick={() => setSizes(prev => prev.includes(size) ? prev.filter(item => item !== size) : [...prev, size])}>
+                  <p className={`${sizes.includes(size) ? 'bg-black text-white' : 'bg-slate-200'} px-3 py-1 cursor-pointer rounded-md font-semibold`}>{size}</p>
+                </div>
+              ))}
+            </div>
           </div>
-           {/* Product Photos */}
-          <div className="mb-4">
-            <label htmlFor="productPhotos" className="block text-sm font-medium text-gray-700">Product Photos</label>
-            <input
-              type="file"
-              id="productPhotos"
-              name="productPhotos"
-              accept="image/*"
-              multiple
-              required
-              className="mt-1 block w-full text-sm text-gray-700 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
-              onChange={handleFileChange}
-            />
-            <p className="text-xs text-gray-500 mt-2">You can upload up to 4 photos.</p>
+          <div className="flex gap-2 items-center">
+            <input onChange={() => setBestseller(prev => !prev)} checked={bestseller} type="checkbox" id="bestseller" />
+            <label className="cursor-pointer font-semibold" htmlFor="bestseller">Add to BestSeller</label>
           </div>
-
-          {/* Product Quantity */}
-          <div className="mb-4">
-            <label htmlFor="productQuantity" className="block text-sm font-medium text-gray-700">Product Quantity</label>
-            <input
-              type="number"
-              id="productQuantity"
-              name="productQuantity"
-              value={formData.productQuantity}
-              onChange={handleChange}
-              required
-              className="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
-            />
-          </div>
-
-          {/* Product Price */}
-          <div className="mb-4">
-            <label htmlFor="productPrice" className="block text-sm font-medium text-gray-700">Product Price (₹)</label>
-            <input
-              type="number"
-              id="productPrice"
-              name="productPrice"
-              value={formData.productPrice}
-              onChange={handleChange}
-              required
-              className="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
-            />
-          </div>
-
-          {/* Product Category */}
-          <div className="mb-4">
-            <label htmlFor="productCategory" className="block text-sm font-medium text-gray-700">Product Category</label>
-            <select
-              id="productCategory"
-              name="productCategory"
-              value={formData.productCategory}
-              onChange={handleChange}
-              required
-              className="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
-            >
-              <option value="">Select Product Category</option>
-              <option value="Men">Men</option>
-              <option value="Women">Women</option>
-              {/* Add other categories here */}
-            </select>
-          </div>
-
-          {/* Vendor Mobile Number */}
-          <div className="mb-4">
-            <label htmlFor="vendorNumber" className="block text-sm font-medium text-gray-700">Vendor Mobile Number</label>
-            <input
-              type="text"
-              id="vendorNumber"
-              name="vendorNumber"
-              value={formData.vendorNumber}
-              onChange={handleChange}
-              required
-              className="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
-            />
-          </div>
-
-          <button
-            type="submit"
-            className="w-full bg-green-500 text-white p-3 rounded-md shadow-md hover:bg-green-600"
-          >
-            Submit
-          </button>
+          <button type="submit" className="w-full py-3 bg-black text-white font-semibold rounded-lg">ADD PRODUCT</button>
         </form>
       </div>
     </div>
