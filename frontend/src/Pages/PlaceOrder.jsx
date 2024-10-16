@@ -43,29 +43,54 @@ const PlaceOrder = () => {
         }
       }
 
-      console.log(orderItems);
-      
       const orderData = {
         address: formData,
         items: orderItems,
         amount: getCartAmount() + delivery_fee,
       };
 
-      if (method === 'cod') {
-        const response = await axios.post(`${backendUrl}/api/order/place`, orderData, {
-          headers: { Authorization: `Bearer ${token}` }, // Use Bearer token for authorization
-        });
-        if (response.data.success) {
-          setCartItems({});
+      // Place the order
+      const response = await axios.post(`${backendUrl}/api/order/place`, orderData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (response.data.success) {
+        // Clear cart items
+        setCartItems({});
+
+        // Send confirmation email only if the order is successful
+        try {
+          await axios.post(`${backendUrl}/send-email`, {
+            emails: formData.email,
+            message: `Dear Customer,
+            
+Thank you for choosing MeerutMart.com for your recent purchase! We truly appreciate your trust in us and hope you had a wonderful shopping experience.Your order has been successfully placed,and our team is working diligently to ensure a smooth and timely delivery.We would love to welcome you back, So please visit us again to explore more great products and deals tailored just for you.Thank you once again for shopping with MeerutMart.com - We look forward to serving you in the future!
+
+Warm regards,
+The MeerutMart Team`,
+          }, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
           navigate('/orders');
-          toast.success('Order placed successfully!');
-        } else {
-          toast.error(response.data.message);
+          toast.success('Order placed successfully! A confirmation email has been sent.');
+        } catch (emailError) {
+          console.error('Error sending email:', emailError);
+          toast.error('Order placed successfully, but failed to send confirmation email.'); // Adjust the message as necessary
         }
+      } else {
+        toast.error(response.data.message);
       }
     } catch (error) {
-      console.error('Error placing order:', error);
-      toast.error('Failed to place the order. Please try again.');
+      if (error.response) {
+        console.error('Error Response:', error.response.data);
+        toast.error(`Error: ${error.response.data.message || 'Unknown error occurred'}`);
+      } else if (error.request) {
+        console.error('Error Request:', error.request);
+        toast.error('No response from server. Please check your connection.');
+      } else {
+        console.error('Error:', error.message);
+        toast.error('An error occurred while placing the order.');
+      }
     }
   };
 
@@ -126,3 +151,4 @@ const PlaceOrder = () => {
 };
 
 export default PlaceOrder;
+

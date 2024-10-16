@@ -1,5 +1,7 @@
 import {v2 as cloudinary} from 'cloudinary'
 import sellProductModel from '../models/sellerProductModel.js';
+import productModel from '../models/productModel.js';
+
 
 // Function for add product
 const sellProduct= async (req,res)=>{
@@ -44,4 +46,39 @@ const sellProduct= async (req,res)=>{
     console.log(error);
    }
 }
-export default sellProduct;
+
+const addItemToWebsite = async (req, res) => {
+    const { id } = req.params;  // Product ID from URL
+
+    try {
+        // Fetch the product from the seller's product collection
+        const sellerProduct = await sellProductModel.findById(id);
+        if (!sellerProduct) {
+            return res.status(404).json({ success: false, message: "Product not found" });
+        }
+
+        // Create a new product for the main website's product collection
+        const newProduct = new productModel({
+            name: sellerProduct.name,
+            description: sellerProduct.description,
+            category: sellerProduct.category,
+            price: sellerProduct.price,
+            subCategory: sellerProduct.subCategory,
+            bestseller: sellerProduct.bestseller,
+            sizes: sellerProduct.sizes,
+            image: sellerProduct.image,
+            date: Date.now(),
+            sellerId: sellerProduct._id  // Keep track of the original seller product's ID
+        });
+
+        // Save the new product to the main products collection
+        await newProduct.save();
+
+        res.status(201).json({ message: "Product successfully added to the website", product: newProduct });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: "Error adding the product to the website" });
+    }
+};
+
+export {addItemToWebsite,sellProduct};

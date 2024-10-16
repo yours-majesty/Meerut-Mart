@@ -10,6 +10,8 @@ import orderRouter from './routes/orderRoute.js';
 import sellerRoutes from './routes/sellerRoutes.js'; 
 import sellItemRoutes from './routes/sellItemRoutes.js';
 import displayProductRouter from './routes/displayProduct.js'; 
+import sendEmail from './utils/sendEmail.js';
+
 
 // App Config
 const app = express();
@@ -26,6 +28,18 @@ connectCloudinary();
     app.use(cors());
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
+    
+    app.post('/send-email', async (req, res) => {
+  const { emails, message } = req.body;
+
+  try {
+   const info = await sendEmail(emails,message);
+    res.status(200).json({ message: 'Emails sent successfully' });
+  } catch (error) {
+    console.error('Error sending email:', error);
+    res.status(500).json({ message: 'Error sending email', error });
+  }
+});
 
     // API Endpoints
     app.use('/api/user', userRouter);
@@ -35,6 +49,7 @@ connectCloudinary();
     app.use('/api', sellerRoutes);
     app.use('/api', sellItemRoutes);
     app.use('/api/displayproduct', displayProductRouter);
+    
 
     app.get('/', (req, res) => {
         res.send("API working");
