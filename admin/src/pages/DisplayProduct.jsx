@@ -52,7 +52,7 @@ const DisplayProducts = () => {
                         {product.sizes && product.sizes.length > 0 && (
                             <p className="mt-1"><strong className="font-bold">Sizes Available:</strong> {product.sizes.join(', ')}</p>
                         )}
-                        <p className="mt-1"><strong className="font-bold">Bestseller:</strong> {product.bestseller ? "Yes" : "No"}</p>
+                        {/* <p className="mt-1"><strong className="font-bold">Bestseller:</strong> {product.bestseller ? "Yes" : "No"}</p> */}
                         <p className="mt-1"><strong className="font-bold">Date Added:</strong> {new Date(product.date).toLocaleDateString()}</p>
                         <div className="mt-2">
                             <strong className="font-bold">Images:</strong>

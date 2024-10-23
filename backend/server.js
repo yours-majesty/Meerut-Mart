@@ -11,6 +11,7 @@ import sellerRoutes from './routes/sellerRoutes.js';
 import sellItemRoutes from './routes/sellItemRoutes.js';
 import displayProductRouter from './routes/displayProduct.js'; 
 import sendEmail from './utils/sendEmail.js';
+import reviewRoutes from './routes/reviewRoutes.js'
 
 
 // App Config
@@ -49,6 +50,7 @@ connectCloudinary();
     app.use('/api', sellerRoutes);
     app.use('/api', sellItemRoutes);
     app.use('/api/displayproduct', displayProductRouter);
+    app.use('/api',reviewRoutes);
     
 
     app.get('/', (req, res) => {

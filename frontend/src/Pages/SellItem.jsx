@@ -129,10 +129,7 @@ const SellItem = ({ token }) => {
               ))}
             </div>
           </div>
-          <div className="flex gap-2 items-center">
-            <input onChange={() => setBestseller(prev => !prev)} checked={bestseller} type="checkbox" id="bestseller" />
-            <label className="cursor-pointer font-semibold" htmlFor="bestseller">Add to BestSeller</label>
-          </div>
+        
           <button type="submit" className="w-full py-3 bg-black text-white font-semibold rounded-lg">ADD PRODUCT</button>
         </form>
       </div>

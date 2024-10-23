@@ -7,6 +7,7 @@ import validator from "validator";
 import User from '../models/userModel.js'; 
 
 
+
 const createToken = (id, role) => {
     return jwt.sign({ id, role }, process.env.JWT_SECRET, {
         expiresIn: '1d' 
@@ -115,20 +116,22 @@ const superAdminLogin = async (req, res) => {
 const promoteToAdmin = async (req, res) => {
     try {
         const { userId } = req.body;
-        const user = await userModel.findById(userId);
-        if (!user) {
-            return res.json({ success: false, message: "User not found" });
+        const seller = await Seller.findById(userId);
+        if (!seller) {
+            return res.json({ success: false, message: "Seller not found" });
         }
 
         // Check if the user is already an admin
-        const existingAdmin = await Admin.findOne({ email: user.email });
+        const existingAdmin = await Admin.findOne({ email: seller.email });
         if (existingAdmin) {
-            return res.json({ success: false, message: "User is already an admin" });
+            return res.json({ success: false, message: "Seller is already an admin" });
         }
 
         
-        const hashedPassword = user.password; 
-        const newAdmin = new Admin({ email: user.email, password: hashedPassword });
+        const hashedPassword = seller.password; 
+        const newAdmin = new Admin({ email: seller.email, password: hashedPassword,
+            
+         });
         await newAdmin.save();
 
         res.json({ success: true, message: "User promoted to admin" });

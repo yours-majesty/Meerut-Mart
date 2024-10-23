@@ -3,6 +3,7 @@ import {useParams} from 'react-router-dom'
 import { ShopContext } from '../context/ShopContext';
 import { assets } from '../assets/frontend_assets/assets';
 import RelatedProducts from '../Components/RelatedProducts';
+import Review from '../Components/Review';
 
 const Product = () => {
 
@@ -97,7 +98,7 @@ const Product = () => {
           <p>Again, the dummy text goes Here.</p>
         </div>
       </div>
-
+<Review/>
       {/* Display Related Products */}
       <RelatedProducts category={productData.category} subCategory={productData.subCategory} />
     </div>

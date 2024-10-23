@@ -73,6 +73,16 @@ const addItemToWebsite = async (req, res) => {
 
         // Save the new product to the main products collection
         await newProduct.save();
+        
+        const deletedProduct = await sellProductModel.findByIdAndDelete(id);
+        if(!deletedProduct){
+            return res.status(404).json({
+                success:false,
+                error:"Product not found"
+            })
+        }
+         
+  
 
         res.status(201).json({ message: "Product successfully added to the website", product: newProduct });
     } catch (error) {
@@ -80,5 +90,7 @@ const addItemToWebsite = async (req, res) => {
         res.status(500).json({ message: "Error adding the product to the website" });
     }
 };
+
+
 
 export {addItemToWebsite,sellProduct};
