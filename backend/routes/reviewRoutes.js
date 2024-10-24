@@ -1,14 +1,16 @@
-import express from 'express'
-import Review from '../models/reviewModel.js'
+import express from 'express';
+import Review from '../models/reviewModel.js';
 
-// import the Review model
 const router = express.Router();
 
 // Endpoint to create a review
-router.post("/reviews", async (req, res) => {
-  const { rating, reviewText } = req.body;
+router.post("/product/:id/reviews", async (req, res) => {
+  const { id: productId } = req.params; // Get productId from URL params
+  const { userName, rating, reviewText } = req.body;
+
   try {
-    const newReview = new Review({ rating, reviewText });
+    // Create a new review associated with the product
+    const newReview = new Review({ productId, userName, rating, reviewText });
     await newReview.save();
     res.status(201).json({ message: "Review saved successfully!" });
   } catch (error) {
@@ -16,10 +18,13 @@ router.post("/reviews", async (req, res) => {
   }
 });
 
-// Endpoint to fetch all reviews
-router.get("/reviews", async (req, res) => {
+// Endpoint to fetch all reviews for a specific product
+router.get("/product/:id/reviews", async (req, res) => {
+  const { id: productId } = req.params; // Get productId from URL params
+  
   try {
-    const reviews = await Review.find();
+    // Fetch reviews associated with the product
+    const reviews = await Review.find({ productId });
     res.json(reviews);
   } catch (error) {
     res.status(400).json({ error: "Error fetching reviews" });
@@ -27,4 +32,3 @@ router.get("/reviews", async (req, res) => {
 });
 
 export default router;
-

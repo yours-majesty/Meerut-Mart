@@ -1,50 +1,89 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 
-const Review = () => {
+const Review = ({productId}) => {
   // State to manage review and rating
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [reviewText, setReviewText] = useState("");
-  const [reviews, setReviews] = useState([]); 
-  const backendUrl=import.meta.env.VITE_BACKEND_URL;
+  const [reviews, setReviews] = useState([]);
+  const [token, setToken] = useState(""); // JWT token state
+  const [userName, setUserName] = useState(""); // State to manage the logged-in user's name
+
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
   // Function to fetch reviews from the backend
-  const fetchReviews = async () => {
-    try {
-      const response = await axios.get(`${backendUrl}/api/reviews`); // Adjust the URL based on your server
-      setReviews(response.data); // Set the fetched reviews in the state
-    } catch (error) {
-      console.error("Error fetching reviews:", error);
-    }
-  };
+  // Function to fetch reviews from the backend
+const fetchReviews = async () => {
+  try {
+    const response = await axios.get(`${backendUrl}/api/product/${productId}/reviews`); // Updated route
+    setReviews(response.data); // Set the fetched reviews in the state
+  } catch (error) {
+    console.error("Error fetching reviews:", error);
+  }
+};
 
-  // Function to handle form submission
-  const handleSubmit = async () => {
-    if (rating && reviewText) {
-      try {
-        const response = await axios.post(`${backendUrl}/api/reviews`, {
+const handleSubmit = async () => {
+  console.log("Rating:", rating);
+  console.log("Review Text:", reviewText);
+  console.log("User Name:", userName);
+
+  if (rating > 0 && reviewText.trim() && userName.trim()) { // Ensure fields are filled
+    try {
+      const response = await axios.post(
+        `${backendUrl}/api/product/${productId}/reviews`, // Updated route
+        {
           rating,
           reviewText,
-        });
-        console.log(response.data.message); // Log success message from backend
-        setRating(0); // Reset form
-        setReviewText("");
-        fetchReviews(); // Refresh the reviews after submission
-      } catch (error) {
-        console.error("Error submitting review:", error);
-      }
+          userName,
+          productId // Add userName to the request body
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Pass the JWT token in the Authorization header
+          },
+        }
+      );
+      console.log(response.data.message); // Log success message from backend
+      setRating(0); // Reset form
+      setReviewText("");
+      fetchReviews(); // Refresh the reviews after submission
+    } catch (error) {
+      console.error("Error submitting review:", error);
+    }
+  } else {
+    console.error("Please fill in all fields.");
+  }
+};
+
+
+  // Function to fetch token and user info (simulate login)
+  const fetchTokenAndUserInfo = async () => {
+   
+
+    // Check for user name in localStorage
+    const storedUserName = await localStorage.getItem("name");
+    if (storedUserName) {
+      setUserName(storedUserName); // Set the user's name
+    } else {
+      console.warn("User name not found in localStorage.");
     }
   };
 
-  // Fetch reviews when the component mounts
+  // Fetch token and reviews when the component mounts
   useEffect(() => {
+    fetchTokenAndUserInfo();
     fetchReviews();
-  }, []);
+  }, [productId]);
 
   return (
     <div className="max-w-md mx-auto bg-white shadow-lg rounded-lg p-6 mt-8">
       <h2 className="text-2xl font-bold mb-4 text-center">Leave a Review</h2>
+
+      {/* Show logged-in user's name */}
+      {userName && (
+        <p className="text-center text-gray-600 mb-4">Please Give your review {userName}!!</p>
+      )}
 
       {/* Rating System */}
       <div className="flex justify-center mb-4">
@@ -77,7 +116,7 @@ const Review = () => {
       <button
         onClick={handleSubmit}
         className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition"
-        disabled={rating === 0 || reviewText === ""}
+        disabled={rating === 0 || reviewText.trim() === ""}
       >
         Submit Review
       </button>
@@ -90,6 +129,9 @@ const Review = () => {
         ) : (
           reviews.map((review) => (
             <div key={review._id} className="mb-4 border p-4 rounded-md shadow-sm">
+             <p className="text-sm text-gray-700 mb-1">
+                <strong>{review.userName}</strong> 
+              </p>
               <div className="flex items-center mb-2">
                 {[...Array(review.rating)].map((_, index) => (
                   <svg
@@ -102,6 +144,8 @@ const Review = () => {
                   </svg>
                 ))}
               </div>
+              
+             
               <p>{review.reviewText}</p>
             </div>
           ))

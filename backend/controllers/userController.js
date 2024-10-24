@@ -7,9 +7,8 @@ import validator from "validator";
 import User from '../models/userModel.js'; 
 
 
-
-const createToken = (id, role) => {
-    return jwt.sign({ id, role }, process.env.JWT_SECRET, {
+const createToken = (id, role, name) => {
+    return jwt.sign({ id, role, name }, process.env.JWT_SECRET, {
         expiresIn: '1d' 
     });
 };
@@ -23,31 +22,32 @@ const loginUser = async (req, res) => {
         let user = await User.findOne({ email });
 
         if (user) {
-        
-            const token = createToken(user._id, 'user'); 
+           
+            const token = createToken(user._id, 'user', user.name);
 
             return res.status(200).json({
                 success: true,
                 token,
-                role: 'user' 
+                role: 'user',
+                name: user.name 
             });
         } else {
-            // If user is not found in User collection, check Seller collection
+           
             let seller = await Seller.findOne({ email });
 
             if (seller) {
-               
-                const token = createToken(seller._id, 'seller');  
+                const token = createToken(seller._id, 'seller', seller.name); 
 
                 return res.status(200).json({
                     success: true,
-                    token, 
-                    role: 'seller' 
+                    token,
+                    role: 'seller',
+                    name: seller.name 
                 });
             }
         }
 
-        // If neither user nor seller is found
+   
         res.status(401).json({ success: false, message: 'Invalid credentials' });
 
     } catch (error) {
@@ -56,17 +56,16 @@ const loginUser = async (req, res) => {
     }
 };
 
-
 // Route for user registration
 const registerUser = async (req, res) => {
     try {
         const { name, email, password } = req.body;
         const exists = await userModel.findOne({ email });
         if (exists) {
-            return res.json({ success: false, message: "User Already Exists with the same email." });
+            return res.json({ success: false, message: "User already exists with the same email." });
         }
 
-        
+        // Validate email and password
         if (!validator.isEmail(email)) {
             return res.json({ success: false, message: "Please enter a valid email" });
         }
@@ -78,30 +77,31 @@ const registerUser = async (req, res) => {
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
+        // Save new user
         const newUser = new userModel({ name, email, password: hashedPassword });
         const user = await newUser.save();
-        const token = createToken(user._id);
-        res.json({ success: true, token });
+
+        // Create token with name
+        const token = createToken(user._id, 'user', user.name);
+        res.json({ success: true, token, name: user.name }); // Send name with token
     } catch (error) {
         console.log(error);
         res.json({ success: false, message: error.message });
     }
 };
 
-
-
 // Route for super admin login
 const superAdminLogin = async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        // Validate credentials
+       
         if (email === process.env.SUPER_ADMIN_EMAIL && password === process.env.SUPER_ADMIN_PASSWORD) {
             const token = jwt.sign(
-                { email, role: 'superadmin' }, 
+                { email, role: 'superadmin', name: 'Super Admin' }, // Set name to 'Super Admin'
                 process.env.JWT_SECRET
             );
-            res.json({ success: true, token });
+            res.json({ success: true, token, name: 'Super Admin' }); // Send name with token
         } else {
             res.json({ success: false, message: "Invalid Credentials" });
         }
@@ -112,7 +112,6 @@ const superAdminLogin = async (req, res) => {
 };
 
 // Promote a user to admin
-
 const promoteToAdmin = async (req, res) => {
     try {
         const { userId } = req.body;
@@ -127,11 +126,9 @@ const promoteToAdmin = async (req, res) => {
             return res.json({ success: false, message: "Seller is already an admin" });
         }
 
-        
-        const hashedPassword = seller.password; 
-        const newAdmin = new Admin({ email: seller.email, password: hashedPassword,
-            
-         });
+        // Promote the seller to admin by creating an entry in the Admin collection
+        const hashedPassword = seller.password;
+        const newAdmin = new Admin({ email: seller.email, password: hashedPassword });
         await newAdmin.save();
 
         res.json({ success: true, message: "User promoted to admin" });
@@ -150,6 +147,7 @@ const demoteToUser = async (req, res) => {
             return res.json({ success: false, message: "User not found" });
         }
 
+        // Remove admin entry from Admin collection
         await Admin.findOneAndDelete({ email: user.email });
 
         res.json({ success: true, message: "Admin demoted to user" });
@@ -159,6 +157,5 @@ const demoteToUser = async (req, res) => {
     }
 };
 
-
-
 export { loginUser, registerUser, superAdminLogin, promoteToAdmin, demoteToUser };
+

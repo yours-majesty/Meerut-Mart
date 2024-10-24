@@ -7,7 +7,7 @@ import adminOrSuperAdmin from '../middleware/adminOrSuperAdmin.js'
 
 const orderRouter=express.Router();
 // Admin Features
-orderRouter.post('/list',adminOrSuperAdmin,adminAuth,allOrders);
+orderRouter.post('/list',allOrders);
 orderRouter.post('/status',adminAuth,updateStatus);
 
 // payment features

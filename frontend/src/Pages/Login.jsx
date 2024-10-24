@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from 'react';
 import { ShopContext } from '../context/ShopContext';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import {jwtDecode}  from 'jwt-decode';
+import {jwtDecode} from 'jwt-decode'; // Use default import for jwt-decode
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -22,9 +22,19 @@ const Login = () => {
 
         // Decode the token to get user details
         const decoded = jwtDecode(userToken);
-        console.log(decoded);
+        console.log("Decoded Token:", decoded); // Log decoded token
+
+        // Store user name in local storage
+        if (decoded.name) {
+          localStorage.setItem('name', decoded.name); // Store name in local storage
+          console.log("User name stored in localStorage:", decoded.name); // Log for debugging
+        } else {
+          console.error("User name not found in the decoded token.");
+        }
+
         const userRole = decoded.role; // Get user role from the token
-console.log(userRole);
+        console.log("User Role:", userRole);
+
         // Redirect based on the user's role
         if (userRole === 'user') {
           navigate('/'); // Redirect to home for users
@@ -37,7 +47,7 @@ console.log(userRole);
         toast.error(response.data.message); // Display error message from the server
       }
     } catch (error) {
-      console.error(error); // Log error for debugging
+      console.error("Login Error:", error); // Log error for debugging
       toast.error('An error occurred. Please try again.'); // User-friendly error message
     }
   };
@@ -89,3 +99,4 @@ console.log(userRole);
 };
 
 export default Login;
+

@@ -98,7 +98,7 @@ const Product = () => {
           <p>Again, the dummy text goes Here.</p>
         </div>
       </div>
-<Review/>
+<Review productId={productId} />
       {/* Display Related Products */}
       <RelatedProducts category={productData.category} subCategory={productData.subCategory} />
     </div>
